@@ -1,6 +1,6 @@
 # Feature Importance-aware Attack(FIA)
 
-This repository contains the code for the paper: 
+This repository contains the code for the FIA paper and my modifications for SHAP values: 
 
 **[Feature Importance-aware Transferable Adversarial Attacks](https://arxiv.org/pdf/2107.14185.pdf)  (ICCV 2021)**
 
@@ -17,37 +17,34 @@ This repository contains the code for the paper:
 
 #### Introduction
 
-- `attack.py` : the implementation for different attacks.
+- `vgg.py` : generating shap values for input images/masked images according to pre-trained vgg-16 model
+
+- `attack.py` : generating adversarial images with FIA attacks for initialization of the gradients pkl files ,that are output of the vgg.py, are used
 
 - `verify.py` : the code for evaluating generated adversarial examples on different models.
 
   You should download the  pretrained models from ( https://github.com/tensorflow/models/tree/master/research/slim,  https://github.com/tensorflow/models/tree/archive/research/adv_imagenet_models) before running the code. Then place these model checkpoint files in `./models_tf`.
 
-#### Example Usage
+#### Usage
 
 ##### Generate adversarial examples:
 
-- FIA
+- FIA with no mask
 
 ```
-python attack.py --model_name vgg_16 --attack_method FIA --layer_name vgg_16/conv3/conv3_3/Relu --ens 30 --probb 0.7 --output_dir ./adv/FIA/
+python attack.py --model_name vgg_16 --attack_method FIA --layer_name vgg_16/conv2/conv2_2/Relu --ens 0 --probb 0.7 --output_dir ./adv/FIA/
 ```
 
-- PIM:
+
+
+
+- FIA with five masks
 
 ```
-python attack.py --model_name vgg_16 --attack_method PIM --amplification_factor 10 --gamma 1 --Pkern_size 3 --output_dir ./adv/PIM/
+python attack.py --model_name vgg_16 --attack_method FIA --layer_name vgg_16/conv2/conv2_2/Relu --ens 5 --probb 0.7 --output_dir ./adv/FIA/
 ```
 
-- FIA+PIDIM
-
-```
-python attack.py --model_name vgg_16 --attack_method FIAPIM --layer_name vgg_16/conv3/conv3_3/Relu --ens 30 --probb 0.7 --amplification_factor 2.5 --gamma 0.5 --Pkern_size 3 --image_size 224 --image_resize 250 --prob 0.7 --output_dir ./adv/FIAPIDIM/
-```
-
-Different attack methods have different parameter setting, and the detailed setting can be found in our paper.
-
-##### Evaluate the attack success rate
+## Evaluate the attack success rate
 
 ```
 python verify.py --ori_path ./dataset/images/ --adv_path ./adv/FIA/ --output_file ./log.csv
@@ -55,7 +52,8 @@ python verify.py --ori_path ./dataset/images/ --adv_path ./adv/FIA/ --output_fil
 
 ## Citing this work
 
-If you find this work is useful in your research, please consider citing:
+
+
 
 ```
 @article{wang2021feature,
@@ -65,4 +63,3 @@ If you find this work is useful in your research, please consider citing:
   year={2021}
 }
 ```
-# cmpe-588-project

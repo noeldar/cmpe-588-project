@@ -316,10 +316,14 @@ def main(_):
                         # use ensemble masked image to obtain weights
                         for l in range(int(FLAGS.ens)):
                             # generate the random mask
-                            mask = np.random.binomial(1, FLAGS.probb, size=(batch_shape[0],batch_shape[1],batch_shape[2],batch_shape[3]))
+                            """mask = np.random.binomial(1, FLAGS.probb, size=(batch_shape[0],batch_shape[1],batch_shape[2],batch_shape[3]))
                             images_tmp2 = images * mask
                             images_tmp2 = image_preprocessing_fn(np.copy(images_tmp2))
-                            w, feature = sess.run([weights_tensor, opt_operations[0]],feed_dict={ori_input: images_tmp2, adv_input: images_tmp2, label_ph: labels})
+                            w, feature = sess.run([weights_tensor, opt_operations[0]],feed_dict={ori_input: images_tmp2, adv_input: images_tmp2, label_ph: labels})"""
+                            with open('/media/tanlab/2TB/withmask_' + str(count) +"_"+str(l)+'.pickle', "rb") as f:
+                                shap_values = pickle.load(f)
+                            w = [np.swapaxes(np.swapaxes(s, 1, -1), 1, 2) for s in shap_values]
+                            w = np.concatenate(w)
                             weight_np = weight_np + w[:FLAGS.batch_size]
 
                         # normalize the weights
